@@ -1,0 +1,59 @@
+Ejercicio 4 (Más funciones sobre secuencias)
+
+Especifique la función NTN que dado un conjunto de secuencias y una secuencia nos devuelva el conjunto de las secuencias que:
+1. son subsecuencia de la pasada como segundo parámetro, y
+2. no son prefijos de ninguna otra secuencia que cumpla la propiedad anterior.
+
+Aclaración: A es subsecuencia de B sii todos los elementos de A aparecen en orden no necesariamente consecutivo en B (si A tiene n elementos, entonces A[1] = B[i1] . . . A[n] = B[in] donde i1 < i2 < . . . < in).
+Por ejemplo, siendo la secuencia dada 7 • 1 • 5 • 7 • 2 • 4 • 9 • <>, en la siguiente tabla se listan los resultados esperados para algunos conjuntos de secuencias posibles:
+
+conjunto de secuencias
+1. 7 • 5 • 2 • <>
+2. 7 • 5 • 2 • <>, 7 • 5 • <>
+3. 7 • 5 • 2 • <>, 7 • 5 • <>, 7 • 7 • 9 • <>
+4. 7 • 5 • 2 • <>, 7 • 5 • <>, 7 • 7 • 9 • <>, 7 • 7 • <>
+5. <>
+6. <>, 7 • 7 • <>
+
+resultado
+1. 7 • 5 • 2 • <>
+2. 7 • 5 • 2 • <>
+3. 7 • 5 • 2 • <>, 7 • 7 • 9 • <>
+4. 7 • 5 • 2 • <>, 7 • 7 • 9 • <>
+5. <>
+6. 7 • 7 • <>
+
+
+// NTN = No Tengo Nombre?
+
+TAD Ejercicio4
+    otras operaciones:
+        NTN: conj(secu(α)) × secu(α) → conj(secu(α))
+
+        subsecuencias: conj(secu(α)) × secu(α) → conj(secu(α))
+        noPrefijos: conj(secu(α)) → conj(secu(α))
+
+        esSubsecuencia: secu(α) × conj(secu(α)) → bool
+        esPrefijo: secu(α) × secu(α) → bool
+
+    axiomas:
+        NTN(c, s) ≡ if vacío?(c) then
+                        ∅
+                    else
+                        noPrefijos(subsecuencias(c, s))
+                    fi
+
+        subsecuencias(c, s) ≡
+                    if vacío?(c) then
+                        ∅
+                    else
+                        if esSubsecuencia(dameUno(c), s) then
+                            Ag(dameUno(c), subsecuencias(sinUno(c), s))
+                        else
+                            subsecuencias(sinUno(c), s)
+                        fi
+                    fi
+        
+
+        esSubsecuencia(s, c) ≡
+                        if  

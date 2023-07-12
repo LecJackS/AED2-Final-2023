@@ -1,0 +1,144 @@
+Ejercicio 10 (Para hacer en la fila del banco) F
+Con el objetivo de mejorar su servicio, un banco decidió analizar el comportamiento de sus largas filas de
+clientes. Se encargó la tarea al señor Felipe N. Sativo, empleado de la casa central del banco en cuestión, quien
+inmediatamente reconoció la necesidad de pedir nuestro asesoramiento.
+Proponer una solución para cada ı́tem del ejercicio, discutirlo con sus compañeros y luego consultarlo con
+un docente.
+
+a) Se presentó un informe en el que se detallaba el comportamiento esperado de una fila de clientes.
+Después de leerlo, releerlo y extraer de allı́ la información importante, comprendimos que las acciones que
+esperaba registrar eran:
+* la apertura de la ventanilla,
+* la llegada de un nuevo cliente a la fila,
+* y la atención del cliente que estuviera en primer lugar (con su consecuente egreso de la fila).
+
+También quedó claro que el banco deseaba poder verificar
+* si la fila estaba vacı́a,
+* conocer la longitud (cantidad de clientes) de la fila,
+* si un cliente determinado estaba o no esperando su atención en dicha fila y,
+* en caso de estarlo, cuál era su posición en ella (siendo la posición 1 la del próximo cliente que serı́a atendido, es decir, el que haya llegado
+primero entre los clientes presentes).
+
+Especificar (distinguiendo generadores, observadores básicos y otras operaciones, y escribiendo los axiomas)
+el tipo FILA, cuyas funciones a exportar son las siguientes:
+
+TAD Fila
+    otras operaciones
+        AbrirVentanilla : → fila
+        Llegar: persona p × fila f → fila    {¬Esperando(p, f )}
+        Atender: fila f → fila               {¬Vacía(f)}
+
+        Vacía: fila → bool
+        Esperando: persona × fila → bool
+        Longitud: fila → nat                
+        Posición: persona p × fila f → nat   {Esperando(p, f )}
+fin TAD
+
+El género es “fila”. Se permite agregar funciones auxiliares en caso de ser necesario.
+
+
+TAD Fila
+    género: fila
+
+    observadores básicos:
+        esperando: persona × fila → bool
+        posición: persona p × fila f → nat   {esperando(p, f)}
+
+    generadores:
+        abrirVentanilla : → fila
+        llegar: persona p × fila f → fila    {¬esperando(p, f)}
+        atender: fila f → fila               {¬vacía(f)}
+
+    otras operaciones
+        vacía: fila → bool
+        longitud: fila→ nat 
+    
+    axiomas
+        // Asumo que no hay personas esperando cuando abro la ventanilla
+        esperando(p, abrirVentanilla) ≡ false
+        esperando(p1, llegar(p2, f)) ≡ p1 = p2
+        // Si puedo usar posición, es porque no se indetermina??? < TODO: Revisar
+        
+        enFila(p, f, i) ≡ 
+                        if i = 0 then
+                            // fila f vacía
+                            false
+                        else
+                            if 
+
+        esperando(p, atender(f)) ≡
+                                if esperando(p, f) then
+                                    // Me aseguro de que p estaba en la fila ANTES de que el 1ero sea atendido
+                                    // De esta forma, posición NO se indetermina
+                                    if posición(p, f) = 1 then
+                                        // Era el 1ero, fue atendido, ya no espera
+                                        false
+                                    else
+                                        true
+                                    fi
+                                else
+                                    false
+                                fi
+                                // También lo puedo reescribir como
+                                if esperando(p, f) ∧L posición(p, f) > 1 then
+                                    true
+                                else
+                                    false
+                                fi
+                                // También lo puedo reescribir como
+                                esperando(p, f) ∧L posición(p, f) > 1
+                                
+        //posición(p, abrirVentanilla) ≡ // nunca sucede
+        posición(p1, llegar(p2, f)) ≡ 
+                                if p1 = p2 then
+                                    // Es el "último" de la fila, pues acaba de llegar
+                                    longitud(f) + 1
+                                else
+                                    posición(p1, f)
+                                fi
+
+        posición(p1, atender(f)) ≡ posición(p1) - 1
+                                // if posición(p1, f) = 1 then
+                                // este caso nunca se da, pues no puedo preguntar la posición de p1 si no está en la fila
+
+        vacía(f) ≡ longitud(f) = 0
+
+        // Uso generadores porque no se me ocurre cómo hacerlo con observadores
+        longitud(abrirVentanilla) ≡ 0 
+        longitud(llegar(p, f)) ≡ longitud(f) + 1
+        longitud(atender(f)) ≡ longitud(f) - 1
+
+fin TAD
+
+
+
+
+b) Durante el primer dı́a de observación, Felipe N. Sativo descubrió que la realidad de las filas del banco era
+más compleja de lo que él habı́a previsto. Notó que algunos clientes, desalentados por la longitud y lentitud
+de la fila, se retiraban sin haber sido atendidos. También detectó algunos clientes que no respetaban el orden
+de la fila, introduciéndose en ella delante de otros clientes que habı́an llegado antes (en términos más simples: colándose).
+Felipe decidió que era importante registrar estos sucesos, ası́ como también conocer la identidad
+de los irrespetuosos alteradores del orden.
+Modificar la especificación anterior para incluir las siguientes funciones:
+
+TAD Fila
+    otras operaciones
+        Retirarse: persona p × fila f → fila
+        ColarseAdelanteDe: persona p × persona q × fila f → fila
+        SeColó?: persona p × fila f → bool
+        {Esperando(p, f )}
+        {¬Esperando(p, f ) ∧ Esperando(q, f )}
+        {Esperando(p, f )}
+fin TAD
+
+c) El banco felicitó al Sr. Sativo por su gran desempeño, y le entregó un último encargo, necesario para com-
+probar la verdadera eficiencia del banco con respecto a la atención de sus clientes. El encargo consistı́a en
+averiguar si un cliente dado ingresó alguna vez a la fila (ya se encuentre esperando en ella, haya sido atendido
+o se haya retirado), y si una persona determinada habı́a sido atendida durante el dı́a (nótese que el tipo
+FILA sólo registra la información de un dı́a, desde el momento en que se abre la ventanilla).
+Modificar nuevamente la especificación para agregar las funciones faltantes:
+
+Entro?: persona × fila→ bool
+FueAtendido? : persona × fila→ bool
+
+Notar que la nueva especificación puede no cumplir los puntos anteriores.

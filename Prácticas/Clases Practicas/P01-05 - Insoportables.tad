@@ -1,0 +1,74 @@
+TAD Famoso ES String
+
+TAD Insoportables
+    géneros: bdf // Base de Datos de Famosos
+    usa: nat
+
+    igualdad observacional:
+        (∀b₁, b₂ : bdf)(b₁ =obs  b₂) ⟺ (∀f: famoso)(famosos(b₁) =obs famosos(b₂))
+                                                   ∧L
+                                                   // Notar quye si no agrego esto, se puede indefinir!!!
+                                                   (f ∈ famosos(b₁) ⟹L enemigos(b₁, f) =obs enemigos(b₂, f))
+
+    observadores básicos:
+        famosos: bdf → conj(famoso)
+        enemigos: bdf b × famoso f → conj(famoso) {f ∈ famosos(b)}
+        
+
+    generadores:
+        crearBD: → bdf
+        agregarFamoso: bdf b × famoso f → bdf           { f ∉ famosos(b) }
+        agregarPelea: bdf × famoso f1 × famoso f2 → bdf { {f1, f2} ⊆ famosos(b) ∧L
+                                                            f1 ∉ enemigos(b,f2)  ∧
+                                                            f1 ≠ f2}
+
+    otras operaciones:
+        reconciliar: bdf × famoso f1 × famoso f2 → bdf { {f1, f2} ⊆ famosos(b) ∧L
+                                                            f1 ∈ enemigos(b,f2)  ∧
+                                                            f1 ≠ f2}
+        másPeleador: bdf b → famoso  { #famosos(b) > 0 }
+
+    axiomas:
+        famosos(crearBD) ≡ ∅
+        famosos(agregarFamoso(b, f)) ≡ b ∙ famosos(f)
+        famosos(agregarPelea(b, f1, f2)) ≡ famosos(b)
+
+        // enemigos(crearBD, e) ≡ ∅ // No va porque nunca sucede, este caso sería indefinido por restricción
+        enemigos(agregarFamoso(b, f), e) ≡ if f = g then
+                                               ∅
+                                           else
+                                               enemigos(b, e)
+                                           fi
+        enemigos(agregarPelea(b, f1, f2), e) ≡ if f1 = e then
+                                                   f2 ∙ enemigos(b, e)
+                                               else
+                                                   if f2 = e then
+                                                       f1 ∙ enemigos(b, e)
+                                                   else
+                                                       enemigos(b, e)
+                                                   fi
+                                               fi
+        // Uso pattern matching
+        reconciliar(agregarFamoso(b, e), f1, f2) ≡ agregarFamoso(reconciliar(b, f1, f2), e)
+
+        reconciliar(agregarPelea(b, e1, e2), f1, f2) ≡ if {e1, e2} = {f1, f2} then
+                                                           b
+                                                       else
+                                                           // Reconcilio antes de pelear y luego agrego pelea
+                                                           agregarPelea(reconciliar(b, f1, f2), e1, e2)
+                                                       fi 
+
+        másPeleador(b) ≡ if #famosos(b) = 1 then
+                             dameUno(famosos(b))
+                         else
+                             if #enemigos(b, dameUno(famosos(b)) > másPeleador(sinUno(famosos(b))) then
+                                 dameUno(famosos(b))
+                             else
+                                 másPeleador(sinUno(famosos(b)))
+                             fi
+                         fi
+
+        
+        famosos(agregarFamoso(b, f)) ≡ b ∙ famosos(f)
+        famosos(agregarPelea(b, f1, f2)) ≡ famosos(b)
+Fin TAD                                             

@@ -1,0 +1,32 @@
+Ejercicio (de tarea): El ascensor 2.0
+Enunciado
+Muchas veces la gente se cansa de esperar el ascensor, dado que
+mientras haya menos de 3 personas en el piso donde est´a el
+ascensor, ´este no va a moverse. Esto implica que en el otro piso
+pueden acumularse much´ısimas personas esperando.
+Para esto se decidi´o incorporar un bot´on en cada piso para llamar
+al ascensor. Si el bot´on es presionado en el piso donde el ascensor
+se encuentra, nada sucede. Por el contrario, si se presiona en el
+piso donde el ascensor no est´a, el ascensor se mueve hacia el piso
+destino llevando con ´el a todas las personas que su capacidad le
+permita y que hayan estado esperando en el piso de origen.
+Obviamente, si el bot´on es presionado es que hay al menos una
+persona en el piso donde se lo presion´o.
+
+Comportamiento automático: Sigue siendo que cuando el ascensor se llena (3 personas) se mueve al otro piso automaticamente. Tambien se descarga, y espera a estar lleno para volver a moverse.
+
+TAD Piso es Nat
+
+TAD Ascensor
+    ...
+
+    observadores básicos:
+        piso: ascensor → piso
+        esperandoEn: ascensor × piso → nat
+
+    generadores:
+        nuevo: → ascensor
+        llegaPersona: ascensor × piso → ascensor
+        presionaBoton: ascensor → ascensor
+
+fin TAD

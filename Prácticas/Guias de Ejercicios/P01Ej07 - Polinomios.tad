@@ -1,0 +1,31 @@
+Ejercicio 7 (Polinomios) F
+Se quieren especificar los polinomios con coeficientes naturales, sabiendo que:
+Un número natural es un polinomio.
+La indeterminada X es un polinomio.
+Si p1 y p2 son dos polinomios, entonces la suma p1 + p2 y el producto p1 · p2 son polinomios.
+Se desea tener en el tipo una operación de evaluación, que dado un polinomio y un número natural lo evalúe de
+la manera habitual y otra que indique si un número natural es raı́z de un polinomio. Completar la especificación
+a partir de la signatura dada.
+
+TAD Polinomio
+	géneros
+	 	polinomio
+	igualdad observacional
+		(∀p1 , p2 : polinomio) (p1 =obs p2 ⇐⇒ ((∀n : nat)(Evaluar(p1 , n) =obs Evaluar(p2 , n))))
+	observadores básicos
+		Evaluar: polinomio × nat → nat
+	generadores
+		Cte: nat → polinomio
+		X: → polinomio
+		• + •: polinomio × polinomio → polinomio
+		• · •: polinomio × polinomio → polinomio
+	axiomas
+	 ...
+Fin TAD
+
+TAD Polinomio
+	axiomas
+		Evaluar(c, n) = c
+		Evaluar(x, n) = n
+		Evaluar(x1 + x2, n) = Evaluar(x1, n) + Evaluar(x2, n)
+		Evaluar(x1 * x2, n) = Evaluar(x1, n) * Evaluar(x2, n)

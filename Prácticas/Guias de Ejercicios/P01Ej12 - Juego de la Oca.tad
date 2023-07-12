@@ -1,0 +1,119 @@
+Ejercicio 12 (Juego de la oca)
+
+Especifique el juego de la oca.
+Dos jugadores, alternadamente, se mueven por un camino de baldosas, numeradas éstas 0, 1, 2, . . . avanzando
+en cada turno tantas baldosas como indique el dado tirado y realizando la acción que indica el tablero para la
+baldosa alcanzada. Van jugando de a uno por vez.
+
+El tablero indica que
+* ambos jugadores comienzan en la baldosa cero,
+* el número de la baldosa en donde está la llegada (que debe ser distinto del de partida) y
+* cómo debe moverse un jugador cuando llega a una determinada baldosa: cuántas baldosas avanzar o retroceder, o no hacer nada (en los demás casos).
+
+La acción correspondiente a una baldosa sólo se toma si se llega a esa avanzando con el dado, no si se llega mediante la acción de otra
+baldosa.
+Gana el primer jugador que alcanza la llegada.
+Proveer también funciones para saber
+* qué indicó el dado en cada jugada para cada uno de los jugadores,
+* y para saber si un jugador pasó por una baldosa determinada.
+
+Pista: definir al menos 2 tipos; uno para el tablero y otro para el juego de la oca propiamente dicho, que use el tablero.
+
+Pista 2: recuerde que los TADs no nos permiten modelar eventos aleatorios.
+
+TAD Baldosa es Int // Necesito poder sumar Baldosa con Efecto
+TAD Tirada es Nat
+TAD Jugador es Nat
+TAD Efecto es Int
+
+
+TAD Tablero
+
+    géneros: tablero
+
+    exporta: tablero, observadores básicos, generadores
+
+    usa: Bool, Arreglo Dimensionable, Baldosa, Tirada, Jugador, Efecto 
+
+    observadores básicos:
+        posición: tablero × jugador j → baldosa           { j ∈ { 1, 2 } }
+        // efecto se interpreta como cantidad de casilleros que avazanza/retrocede
+        // efecto(t, b) puede ser
+        //    n: avanza n casilleros
+        //    0: se queda en el lugar
+        //   -n: retrocede n casilleros
+        obtenerEfecto: tablero t × baldosa b ⟹ efecto     { 0 ≤ b ≤ baldosaFinal(t) }
+
+    generadores:
+        // El arreglo de efectos contiene los efectos de cada baldosa del tablero
+        nuevo: arreglo(efecto) a → algo                   { tam(a) > 1 ∧L sonEfectosVálidos(a) }
+        avanzar: tirada d × jugador j × tablero ⟹ tablero { 1 ≤ d ≤ 6 ∧ j ∈ { 1, 2 } } 
+
+    
+    otras operaciones:
+        baldosaFinal: tablero → baldosa
+        sonEfectosVálidos: arreglo(efecto) ⟹ bool
+        esVálidoAPartirDe: arreglo(efecto) × nat ⟹ bool
+
+    axiomas:
+        posición(nuevo(a), j) ≡ 0
+        posición(avanzar(d, j1, t), j2) ≡
+                                if ¬(j1 = j2) then
+                                    posición(t, j2)
+                                else
+                                    // jugador avanza d casilleros, pero tambien recibe el efecto de la baldosa en la que cae
+                                    posición(t, j2) + d + obtenerEfecto(t, posición(t, j2) + d)
+                                fi
+
+        obtenerEfecto(nuevo(a), b) ≡ a[b]
+        obtenerEfecto(avanzar(d, j1, t), b) ≡ obtenerEfecto(t, b)
+
+        baldosaFinal(nuevo(a)) ≡ tam(a) - 1
+        baldosaFinal(avanzar(d, j1, t)) ≡ baldosaFinal(t)
+        
+        sonEfectosVálidos(a) ≡ esVálidoAPartirDe(a, 0)
+
+        esVálidoAPartirDe(a, b) ≡
+                        if b ≥ tam(a) then
+                            // Recorri todos los anteriores, y son todos válidos
+                            true
+                        else
+                            // Cada efecto debe estar contenido en el mapa:
+                            // No puede hacerme caer en una baldosa b menor a 0
+                            // No puede hacerme caer en una baldosa b mayor a la última
+                            0 ≤ b + a[b] ≤ tam(a) - 1 ∧L esVálidoAPartirDe(a, b + 1)
+                        fi
+Fin TAD
+
+
+TAD Jugada es Nat
+
+TAD Juego
+
+    géneros: juego
+
+    exporta: algo, observadores básicos, generadores
+
+    usa: Bool, Tablero
+
+    observadores básicos:
+        histDado: jugador p × jugada n × juego j → tirada   { 0 < n ≤ cantidadDeTiradas(j) }
+
+    generadores:
+        nuevoJuego: tablero → juego
+        avanzarJugador: tirada d × jugador p × juego ⟹ juego   { 1 ≤ d ≤ 6 ∧ p ∈ { 1, 2 } }
+
+    otras operaciones:
+        // Como puedo determinar el historial del Jugador a partir del historial del dado, no es observador básico
+        histJugador: jugador p × baldosa b × juego j ⟹ bool  { p en {1,2} ∧ b en tablero }
+
+        otraCosa: algo × nat → nat
+        cantidadDeTiradas
+
+    axiomas:
+        //histDado(nuevoJuego(t), p, n, j) ≡ // Precondicion no lo permite
+        histDado(avanzarJugador(d, p1, j1), p2, n, j2) ≡
+                                                    if p1=p2 then 
+                                                        
+
+Fin TAD

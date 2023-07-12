@@ -1,0 +1,108 @@
+// Ejercicio 2 (Funciones sobre árboles binarios)
+// Definir las siguientes funciones sobre árboles binarios:
+// a) #Hojas, que cuenta la cantidad de hojas del árbol.
+
+TAD ArbolBinarioExtendido
+
+    otras operaciones:
+        #hojas: ab(α) → nat
+    axiomas:
+        #hojas(nil) ≡ 0
+        #hojas(bin(a, x, b)) ≡ if nil?(a) ∧ nil?(b) then
+                              1
+                          else
+                              #hojas(a) + #hojas(b)
+                          fi 
+
+// b) DegeneradoAIzquierda, que chequea si todo nodo interno (no hoja) tiene sólo subárbol izquierdo.
+
+    otras operaciones:
+        degeneradoAIzquierda: ab(α) → bool
+    axiomas:
+        degeneradoAIzquierda(nil) ≡ true
+        degeneradoAIzquierda(bin(a, x, b)) ≡ nil?(b) ∧ degeneradoAIzquierda(a)
+
+// c) ZigZag, que chequea si todo el árbol es degenerado con direcciones alternadas.
+
+    otras operaciones:
+        izq: ab(α) → bool
+        der: ab(α) → bool
+        zigZag: ab(α) → bool
+
+    axiomas:
+        izq(nil) ≡ true
+        izq(bin(a, x, b)) ≡ nil?(b) ∧ der(a)
+
+        der(nil) ≡ true
+        der(bin(a, x, b)) ≡ nil?(a) ∧ izq(b)
+
+        zigZag(nil) ≡ true
+        zigZag(bin(a, x, b)) ≡ der(bin(a, x, b)) ∨ izq((bin(a, x, b)))
+
+// d) ÚltimoNivelCompleto, que devuelve el número del último nivel que está completo (es decir, aquél que tiene todos los nodos posibles).
+    otras operaciones:
+        ultimoNivelCompleto: ab(α) → nat
+
+    axiomas:
+        ultimoNivelCompleto(nil) ≡ 0
+        ultimoNivelCompleto(bin(a, x, b)) ≡  1 + min(ultimoNivelCompleto(a), ultimoNivelCompleto(b))
+
+// e) Espejo, que dado un árbol devuelve su reflejo simétrico, como en un espejo. Ver figura 1(a).
+// 
+//         1           1
+//       2   3   =>  3   2
+//     4                   4
+//   5   6               6   5
+//
+    otras operaciones:
+        espejo: ab(α) → ab(α)
+
+    axiomas:
+        espejo(nil) ≡ nil
+        espejo(bin(a, x, b)) ≡ bin(espejo(b), x, espejo(a))
+
+
+// f) EsSimétrico? , que chequea si el árbol pasado por parámetro es simétrico. Lea la nota al pie una vez que lo haya resuelto.
+// Si no utilizó la función Espejo para describir EsSimétrico? , vuelva a pensar el ejercicio
+    otras operaciones:
+        esSimétrico?: ab(α) → bool
+
+    axiomas:
+        esSimétrico?(nil) ≡ true
+        esSimétrico?(bin(a, x, b)) ≡ bin(a, x, b) = espejo(bin(a, x, b))
+
+// Extra 1) Practica 01 Parte 3
+// #apariciones(ab, a) que devuelve la cant de apariciones de a en el arbol binario ab
+    otras operaciones:
+        #apariciones: ab(α) × α → nat
+
+    axiomas:
+        #apariciones(nil, y) ≡ 0
+        #apariciones(bin(a, x, b), y) ≡ (if y = x then
+                                            1
+                                        else
+                                            0  
+                                        fi) + #apariciones(a) + #apariciones(b)
+
+// Extra 2) caminoHasta(ab, a) devuelve la secuencia que representa el camino desde la raíz del árbol ab hasta el elemento a. Si no existe, devuelve la secuencia vacía.
+    otras operaciones:
+        caminoHasta: ab(α) × α → secu(α)
+
+    axiomas:
+        caminoHasta(nil, y) ≡ <>
+        caminoHasta(bin(a, x, b), y) ≡ if x = y then
+                                           y ∙ <>
+                                       else
+                                           if #apariciones(a, y) = 0 then
+                                                if #apariciones(b, y) = 0 then
+                                                    <>
+                                                else
+                                                    x ∙ caminoHasta(b, y)
+                                                fi
+                                            else
+                                                x ∙ caminoHasta(a, y)
+                                            fi
+                                        fi
+
+
+

@@ -1,0 +1,69 @@
+Ejercicio 9 (Electroimán) F
+Se dispone de una cinta circular, dividida en una cantidad fija de celdas, sobre las cuales pueden o no existir
+elementos metálicos. Esta cinta se mueve en ambos sentidos.
+Sobre la cinta se encuentra montado un electroimán que atrae los elementos metálicos de la cinta cuando
+éstos quedan debajo de él. La disposición inicial de los elementos sobre la cinta puede ser cualquiera.
+El imán puede estar prendido o apagado, y sólo atrae elementos cuando está prendido y no está cargado
+(ocupado) con algún elemento previamente atraı́do. Además, el imán sólo puede apagarse si el objeto atraı́do
+(de haberlo) puede ser depositado debajo en la cinta.
+Tanto el imán como cada celda de la cinta sólo pueden contener un elemento a la vez, es decir que si el imán
+tiene atraı́do un elemento no puede atraer otro, y que si sobre una celda hay un elemento no puede soltarse
+sobre ella el elemento que tenga atraı́do el imán.
+Por convención numeraremos las celdas de la cinta de 0 a n-1, siendo n la cantidad total de celdas. Además
+suponemos que la celda inicial es la número 0.
+Se desea conocer cuántas veces se aplicaron las funciones “girar la cinta” a la izquierda y a la derecha (← y
+→ respectivamente), por separado, y si hay o no elementos metálicos sobre cada celda de la cinta.
+
+Completar la especificación a partir de la signatura dada.
+
+TAD Electroimán
+	igualdad observacional
+		(. . . )
+	observadores básicos
+		Cinta: electroimán −→ cinta
+		ImánPrendido? : electroimán −→ bool
+		ImánCargado? : electroimán e −→ bool
+		{ImánPrendido?(e)}
+	generadores
+		Arrancar: cinta −→ electroimán
+		Prender: electroimán e −→ electroimán
+	 				{¬ImánPrendido?(e)}
+		Apagar: electroimán e → electroimán
+					{ImánPrendido?(e) ∧L (ImánCargado?(e) ⇒ ¬CeldaActualOcupada?(e))}
+		←: electroimán → electroimán
+		→: electroimán → electroimán
+	otras operaciones
+		CeldaActualOcupada? : electroimán → bool
+		#Giros←: electroimán → nat
+		#Giros→: electroimán → nat
+	axiomas
+	 ...
+Fin TAD
+
+
+
+// Cinta podría ser una tira de n booleanos, con un 1 si hay un elemento en ella, y un 0 sino.
+
+TAD Electroimán
+
+    axiomas
+        cinta(arrancar(c)) = c
+        cinta(Prender(e)) = cinta(e)
+        cinta(todos los otros) = cinta(e)
+
+        imánPrendido?(arrancar(c)) = false
+        imánPrendido?(prender(e)) = true
+        imánPrendido?(apagar(e)) = false
+        // Mover la cinta no cambia el estado del electroimán
+        imánPrendido?(<-(e) y ->(e)) = imánPrendido?(e)
+
+        imánCargado?(arrancar(c)) = false
+        imánCargado?(prender(e)) = if celdaActualOcupada(e) then true else false fi
+        // ImánCargado?(apagar(e)) = false // Nunca se da por precondicion
+        // Mover la cinta no cambia el estado del electroimán
+        imánCargado?(<-(e) y ->(e)) = imánCargado(e)
+
+        celdaActualOcupada(e) = ???
+
+
+fin TAD

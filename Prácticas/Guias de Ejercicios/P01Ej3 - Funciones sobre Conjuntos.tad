@@ -1,0 +1,44 @@
+// Ejercicio 3 (Funciones sobre conjuntos)
+// a) Definir la función recursiva PartesDe, que dado un conjunto de naturales devuelve un conjunto con todos los subconjuntos del conjunto parámetro.
+// b) Definir la función combinacionesDeK , que dado un conjunto C y un número natural k devuelve el conjunto de todos los subconjuntos de C que contienen k elementos.
+
+TAD ejercicio3
+    otras operaciones:
+        partesDe: conj(nat) → conj(conj(nat))
+        combinacionesDeK: conj(α) × nat → conj(conj(α))
+
+        agregarATodos: nat × conj(conj(nat)) → conj(nat)
+        buscar: conj(conj(α)) × nat → conj(conj(α))
+
+    axiomas:
+        partesDe(c) ≡ 
+                    if vacío?(c) then
+                        ∅
+                    else
+                        partesDe(sinUno(c)) ∪ agregarATodos(dameUno(c), partesDe(sinUno(c)))
+                    fi
+
+        agregarATodos(n, cc) ≡ 
+                    if vacío?(cc) then
+                        ∅
+                    else
+                        Ag(n, dameUno(cc)) ∪ agregarATodos(sinUno(cc))
+                    fi
+
+        buscar(cc, n) ≡
+                    if vacío?(cc) then
+                        ∅
+                    else
+                        if #dameUno(cc) = n then
+                            Ag(dameUno(cc), buscar(sinUno(cc), n)
+                        else
+                            buscar(sinUno(cc), n)
+                        fi
+                    fi
+
+        combinacionesDeK(c, n) ≡ 
+                    if vacío?(c) then
+                        ∅
+                    else
+                        buscar(partesDe(c), n)
+                    fi

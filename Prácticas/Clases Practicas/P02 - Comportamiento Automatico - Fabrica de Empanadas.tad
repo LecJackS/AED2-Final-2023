@@ -1,0 +1,46 @@
+Ejercicio: La f´abrica de empanadas
+Enunciado
+Se quiere especificar el comportamiento de una f´abrica de
+empanadas que est´a totalmente automatizada. A medida que se
+encuentran listas, las empanadas van saliendo de una m´aquina una
+a una y son dep´ositadas en una caja para empanadas. En la caja
+caben 12 empanadas y cuando ´esta se llena, es autom´aticamente
+despachada y reemplazada por una caja vac´ıa.
+Requerimientos
+Se quiere saber:
+I Cu´antas cajas de empanadas se despacharon en total.
+I Cu´antas
+
+Comportamiento automático: cuando la caja se llena, es [automáticamente despachada y reemplazada] por una caja vacía
+
+TAD FDE
+    ...
+
+    observadores básicos:
+        cajasDespachadas: fde → nat
+        empanadasEnCaja: fde → nat
+
+    generadores:
+        nuevaFDE: → fde
+        depositarEmpanada: fde → fde
+
+    axiomas:
+        cajasDespachadas(nuevaFDE) ≡ 0
+        cajasDespachadas(depositarEmpanada(f)) ≡
+                                    if empanadasEnCaja(f) = 11 then
+                                        # Con esta empanadas se llena la caja y se despacha automaticamente!
+                                        cajasDespachadas(f) + 1
+                                    else
+                                        cajasDespachadas(f)
+                                    fi
+
+        empanadasEnCaja(nuevaFDE) ≡ 0
+        empanadasEnCaja(depositarEmpanada(f)) ≡
+                                     if empanadasEnCaja(f) = 11 then
+                                        # Con esta empanadas se llena la caja y se despacha automaticamente!
+                                        0
+                                    else
+                                        # La caja tiene 10 o menos empanadas
+                                        empanadasEnCaja(f) + 1
+                                    fi
+fin TAD

@@ -1,0 +1,73 @@
+Ejercicio: El ascensor in´util
+Enunciado
+Se quiere especificar el comportamiento de un ascensor que lleva
+personas entre dos pisos. La capacidad m´axima del ascensor es de
+3 personas. El ascensor se pone en funcionamiento cuando ingresan
+3 personas, sin necesidad de apretar ning´un bot´on. Cuando el
+ascensor se pone en movimiento, se desplaza del piso en el que
+est´a hacia el otro. En cuanto llega al piso de destino, las personas
+que est´an en el interior del ascensor lo desocupan inmediatamente.
+En cualquier momento pueden llegar personas a cualquiera de los
+dos pisos. En el caso que el ascensor no est´e, las personas forman
+una fila y esperan a que el ascensor las venga a buscar.
+Requerimientos
+Se quiere saber:
+I En qu´e piso est´a el ascensor.
+I La cantidad de personas esperando en cada piso
+
+Comportamiento automático: cuando el ascensor se llena (3 personas) se mueve al otro piso automaticamente. Tambien se descarga, y espera a estar lleno para volver a moverse.
+TAD Piso es Nat
+
+TAD Ascensor
+    ...
+
+    observadores básicos:
+        piso: ascensor → piso
+        esperandoEn: ascensor × piso → nat
+
+    generadores:
+        nuevo: → ascensor
+        llegaPersona: ascensor × piso → ascensor
+
+    axiomas:
+        piso(nuevo) ≡ 0
+        piso(llegaPersona(a, p)) ≡
+                                    if p = otroPiso(piso(a)) ∨ esperandoEn(a, piso(a)) < 2 then
+                                        # Esta persona no mueve el ascensor
+                                        piso(a)
+                                    else
+                                        if esperandoEn(a, otroPiso(piso(a))) < 3 then
+                                            # Cambia de piso y ahi se queda
+                                            otroPiso(piso(a))
+                                        else
+                                            # Cambia de piso y vuelve a cambiar
+                                            piso(a)
+                                    fi
+
+        esperandoEn(nuevo, p) ≡ 0
+        esperandoEn(llegaPersona(a, p1), p2) ≡
+                                    if piso(a) = p1 ∧ esperandoEn(a, p1) = 2 then
+                                        # Si el ascensor está en p1, entonces tiene lugar disponible, entonces se mete
+                                        if p1 = p2 then
+                                            # Con esta nueva persona, se completan las 3 y cambia de piso
+                                            0
+                                        else
+                                            if esperandoEn(a, p2) < 3 then
+                                                esperandoEn(a, p2)
+                                            else
+                                                # El ascensor se llenó en el otro piso, cambió, y se llevó 3 de la fila
+                                                esperandoEn(a, p1) - 3
+                                            fi
+                                        fi
+                                    else
+                                        # Llega una persona al piso p1, pero el ascensor está en el otro piso
+                                        # entonces se suma a la fila de espera
+                                        if p1 = p2 then 
+                                            esperandoEn(a, p1) + 1
+                                        else
+                                            # La persona llegó a un piso distinto a p2, entonces las que esperan en
+                                            # el piso p2 no cambian
+                                            esperandoEn(a, p2)
+                                        fi
+                                    fi
+fin TAD

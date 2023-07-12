@@ -1,0 +1,107 @@
+Competencia de Acertijos
+
+TAD Acertijo es Nat
+TAD Dificultad es Nat
+
+TAD Laberinto
+    observadores básicos:
+        mapa: lab l → dicc(acertijo, conj(acertijo)))
+
+        dificultad: lab l × acertijo a → dificultad {a ∈ claves(mapa(c))}
+
+    generadores:
+        nuevoMapa: acertijo × dificultad d → repro    { 1 ≤ d ≤ 5 }
+        agregarAcertijo: lab l × acertijo a × dificultad d × conj(acertijo) prev → repro
+                                { ¬(a ∈ claves(mapa(l)))
+                                  ∧ ( 1 ≤ d ≤ 5 )
+                                  ∧  ¬ vacío?(prev)
+                                  ∧  prev ⊆ claves(mapa(l))}
+
+    otras operaciones:
+        esAcertijoInicial?: lab × acertijo → repro
+        esAcertijoFinal?: lab × acertijo → repro
+        acertijosFinales: lab × conj(acertijo) → conj(acertijo)
+
+    axiomas:
+        mapa(nuevoMapa(a, d)) ≡ definir(a, {}, vacío)
+        mapa(agregarAcertijo(l, a, d, prev)) ≡ definir(a, {}, mapa(l)) // TODO: Rehacer!!! Por cada uno de los prev, debo agregar  <<<<<<<<<<<<<<<<<<
+
+        conectarConAnteriores(l, a, prev) ≡ mapa(dameUno(prev)...... // TODO: No se si se puede hacer así :/
+
+        dificultad(nuevoMapa(a1, d), a2) ≡ d // Pues a1=a2 siempre, pues es el único elemento y solo se puede consultar por elementos existentes
+        dificultad(agregarAcertijo(l, a1, d, prev), a2) ≡
+                                        if a1=a2 then
+                                            d
+                                        else
+                                            dificultad(l, a2)
+                                        fi
+
+        // Uso generadores
+        esAcertijoInicial?(nuevoMapa(a1, d), a2) ≡ true
+        esAcertijoInicial?(agregarAcertijo(l, a1, d1, prev), a2) ≡
+                                        if a1=a2
+                                            false
+                                        else
+                                            esAcertijoInicial?(l, a2)
+                                        fi
+
+        // Uso observadores
+        acertijosFinales(l, c) ≡
+                            if vacío?(c) then
+                                {}
+                            else
+                                if vacío?(mapa(l)[dameUno(c)]) then
+                                    Ag(dameUno(c), acertijosFinales(l, sinUno(c)))
+                                else
+                                    acertijosFinales(l, sinUno(c))
+                                fi
+                            fi
+
+        esAcertijoFinal?(l, a) ≡ a ∈ acertijosFinales(l, claves(mapa(l)))
+        
+
+Fin TAD
+
+TAD Compe
+    ...
+
+    observadores básicos:
+        laberinto: compe → lab
+
+        jugadores: compe → conj(jugador) 
+        jugadorEn: compe c × jugador j → acertijo
+                            {j ∈ jugadores(c) } 
+
+        camino: compe c × jugador j → conj(acertijo)  // Podria ser secu? pues respeta orden el camino
+                            {j ∈ jugadores(c) }
+
+    generadores:
+        iniciarTemporada: conj(jugador) × lab l → repro   { #(acertijosFinales(l, claves(mapa(l)))) = 1 }
+        resuelve: compe c × jugador j × acertijo elec → compe
+                            { ¬temporadaFinalizada(c)
+                              ∧ j ∈ jugadores(c)
+                              ∧L // Si no pongo este yLuego, se indefine la proxima!
+                              (elec ∈ mapa[jugadorEn(c, j)] ∨ jugadorEn(c, j) ∈ acertijosFinales)
+                              }
+
+    otras operaciones:
+        temporadaFinalizada: compe c → bool
+
+    axiomas:
+        laberinto(iniciarTemporada(cj, l)) ≡ l 
+        laberinto(resuelve(c,j,elec)) ≡ laberinto(c)
+
+        jugadores(iniciarTemporada(cj, l)) ≡ cj
+        jugadores(resuelve(c, j, elec)) ≡ jugadores(c)
+
+        jugadorEn(iniciarTemporada(cj, l), j) ≡ acertijoInicial(l) // no la definí pero es como la otra
+        jugadorEn(resuelve(c, j1, elec), j2) ≡ elec
+
+        camino(iniciarTemporada(cj, l), j) ≡ {}
+        camino(resuelve(c, j1, elec), j2) ≡
+                                    if j1=j2 then
+                                        Ag(jugadorEn(c, j1), camino(c, j2))
+                                    else
+                                        camino(c, j2)
+                                    fi
+

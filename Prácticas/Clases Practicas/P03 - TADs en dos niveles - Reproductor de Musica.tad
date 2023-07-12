@@ -1,0 +1,78 @@
+# Reproductor de musica
+Provee catalogo de canciones
+Cada cancion pertenece a un genero musical
+El usuario puede reproducir canciones del catalogo
+Se pide:
+Cuantas veces se reprodujo cada cancion
+Cuantas canciones se reprodujeron de cada género
+
+NOTA:
+    La resolución de Pablo asume que el catálogo es fijo y se pasa al inicio (dicc(cancion, genero))
+    Como observador usa catálogo, que devuelve un diccionario
+    Con eso, la especificación queda más compacta
+
+TAD Canción es String
+TAD Género es String
+
+TAD repro
+    ...
+
+    observadores básicos:
+        numRepro: repro r × canción c → nat   {c ∈ canciones(r)}
+        //numGénero repro r × género g → nat       {g ∈ géneros(r)} // Es redundante
+
+        canciones: repro r → conj(cancion) 
+        géneroDeCancion: repro r × canción c → conj(género) {c ∈ canciones(r)}
+
+    generadores:
+        nuevo: → repro
+
+        agregarCanción: repro × canción × género → repro
+
+        reproducirCanción: repro × canción → repro   {c ∈ canciones(r)} 
+
+    otras operaciones:
+        cancionesDelGénero: repro × género × conj(canciones) → nat
+        numGénero: repro r × género g → nat       {g ∈ géneros(r)}
+
+    axiomas:
+        canciones(nuevo) ≡ {}
+        canciones(agregarCanción(r, c, g)) ≡ Ag(c, canciones(r))
+        canciones(reproducirCanción(r, c)) ≡ canciones(r)
+        
+        géneroDeCancion(nuevo, c) ≡ {}
+        géneroDeCancion(agregarCanción(r, c1, g), c2) ≡
+                                if c1 = c2 then 
+                                    g
+                                else
+                                    géneroDeCanción(r, c2)
+                                fi
+
+        géneroDeCancion(reproducirCanción(r, c1), c2) ≡ géneroDeCancion(r, c2)
+
+        // numRepro(nuevo, c) ≡ 0 # no hay canciones en un repro nuevo, entonces la precondicion es siempre falsa
+        numRepro(agregarCanción(r, c1, g), c2) ≡ numRepro(r, c2)
+        numRepro(reproducirCanción(r, c1), c2) ≡
+        						if c1 = c2 then 
+        							1 + numRepro(r, c2)
+        						else
+        							numRepro(r, c2)
+        						fi
+
+        // Recorro los elementos del conjunto canciones(r), y cuento todas las que sean del género g
+        cancionesDelGénero(r, g, cs) ≡
+                            if vacío?(cs) then
+                                0
+                            else
+                                if género(dameUno(cs)) = g then
+                                    1 + cancionesDelGénero(r, g, sinUno(cs))
+                                else
+                                    cancionesDelGénero(r, g, sinUno(cs))
+                                fi
+                            fi
+
+        numGénero(r, g) ≡ cancionesDelGénero(r, g, canciones(r))
+                                
+        						
+
+fin TAD

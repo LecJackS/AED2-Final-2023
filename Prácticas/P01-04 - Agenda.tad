@@ -1,0 +1,40 @@
+TAD Compromiso ES String
+TAD Hora ES Nat
+
+TAD Agenda
+    géneros: agenda
+    usa: nat
+
+    igualdad observacional:
+        (∀a₁, a₂ : agenda)(a₁ =obs  a₂) ⟺ (∀h : hora)
+                                            (compromisos(a₁, h) =obs compromisos(a₂, h))
+
+    observadores básicos:
+        compromisos: agenda × nat → conj(compromisos)
+
+    generadores:
+        crearAgenda:  → agenda
+        registrar: agenda × compromiso × hora hi × hora hf → agenda { hi ≤ hf }
+
+    otras operaciones:
+        horaMasOcupada: agenda × hora hi × hora hf → hora { hi ≤ hf }
+
+    axiomas:
+        compromisos(crearAgenda, h) ≡ ∅
+        compromisos(registrar(a, c, hi, hf), h) ≡ if hi ≤ h ∧ hf ≥ h then
+                                                      Ag(c, compromisos(a))
+                                                  else
+                                                      compromisos(a)
+                                                  fi
+        
+        horaMasOcupada(a, desde, hasta) ≡
+            if desde = hasta then
+                desde
+            else
+                if #compromisos(a, desde) > #compromisos(horaMasOcupada(a, desde+1, hasta)) then
+                    desde
+                else
+                    horaMasOcupada(a, desde+1, hasta)
+                fi
+            fi
+Fin TAD 
